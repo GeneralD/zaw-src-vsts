@@ -3,8 +3,8 @@
 function zaw-src-vsts() {
     if which jq 1>/dev/null || brew install jq 2>dev/null
 
-    ${ZAW_VSTS_INSTANCE:=`vsts configure -l | grep instance | awk '{ print $NF }'`}
-    ${ZAW_VSTS_CLONE_METHOD:='ssh'}
+    ZAW_VSTS_INSTANCE=${ZAW_VSTS_INSTANCE:-`vsts configure -l | grep instance | awk '{ print $NF }'`}
+    ZAW_VSTS_CLONE_METHOD=${ZAW_VSTS_CLONE_METHOD:-'ssh'}
 
     candidates=("${(@f)$(vsts project list --instance $ZAW_VSTS_INSTANCE --output json | jq --raw-output '.[].name')}")
 
