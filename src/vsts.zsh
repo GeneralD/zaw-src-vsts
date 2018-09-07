@@ -2,7 +2,8 @@
 
 function zaw-src-vsts() {
     if which jq 1>/dev/null || brew install jq 2>dev/null
-    candidates=("${(@f)$(vsts project list --instance $ZAW_VSTS_INSTANCE --output json | jq --raw-output '.[].name')}")
+
+    candidates=("${(@f)$(vsts project list --instance ${ZAW_VSTS_INSTANCE:-`vsts configure -l | grep instance | awk '{ print $NF }'`} --output json | jq --raw-output '.[].name')}")
 
     if which ghq 1>/dev/null; then
         actions=('zaw-src-vsts-ghq')
@@ -15,14 +16,14 @@ function zaw-src-vsts() {
 
 function zaw-src-vsts-ghq() {
     local list=`vsts code repo list --instance $ZAW_VSTS_INSTANCE --output json --project "${(j:; :)@}"`
-    [[ $ZAW_VSTS_CLONE_METHOD == 'ssh' ]] && local url=`echo $list | jq --raw-output '.[0].additionalProperties.sshUrl'` || local url=`echo $list | jq --raw-output '.[0].remoteUrl'`
+    [[ ${ZAW_VSTS_CLONE_METHOD:-'ssh'} == 'ssh' ]] && local url=`echo $list | jq --raw-output '.[0].additionalProperties.sshUrl'` || local url=`echo $list | jq --raw-output '.[0].remoteUrl'`
     BUFFER="ghq get $url"
     zle accept-line
 }
 
 function zaw-src-vsts-clone() {
     local list=`vsts code repo list --instance $ZAW_VSTS_INSTANCE --output json --project "${(j:; :)@}"`
-    [[ $ZAW_VSTS_CLONE_METHOD == 'ssh' ]] && local url=`echo $list | jq --raw-output '.[0].additionalProperties.sshUrl'` || local url=`echo $list | jq --raw-output '.[0].remoteUrl'`
+    [[ ${ZAW_VSTS_CLONE_METHOD:-'ssh'} == 'ssh' ]] && local url=`echo $list | jq --raw-output '.[0].additionalProperties.sshUrl'` || local url=`echo $list | jq --raw-output '.[0].remoteUrl'`
     BUFFER="git clone $url"
     zle accept-line
 }
