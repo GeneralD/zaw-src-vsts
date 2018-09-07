@@ -18,18 +18,16 @@ function zaw-src-vsts() {
 }
 
 function zaw-src-vsts-ghq() {
-    local encoded=`echo ${(j:; :)@} | nkf -WwMQ | tr = %`
-    local list=$(vsts code repo list --instance $ZAW_VSTS_INSTANCE --output json --project $encoded)
+    local list=`vsts code repo list --instance $ZAW_VSTS_INSTANCE --output json --project "${(j:; :)@}"`
     [[ $ZAW_VSTS_CLONE_METHOD == 'ssh' ]] && local url=`echo $list | jq --raw-output '.[0].additionalProperties.sshUrl'` || local url=`echo $list | jq --raw-output '.[0].remoteUrl'`
-    BUFFER="ghq get $url"
+    BUFFER="ghq get \"$url\""
     zle accept-line
 }
 
 function zaw-src-vsts-clone() {
-    local encoded=`echo ${(j:; :)@} | nkf -WwMQ | tr = %`
-    local list=$(vsts code repo list --instance $ZAW_VSTS_INSTANCE --output json --project $encoded)
+    local list=`vsts code repo list --instance $ZAW_VSTS_INSTANCE --output json --project "${(j:; :)@}"`
     [[ $ZAW_VSTS_CLONE_METHOD == 'ssh' ]] && local url=`echo $list | jq --raw-output '.[0].additionalProperties.sshUrl'` || local url=`echo $list | jq --raw-output '.[0].remoteUrl'`
-    BUFFER="git clone $url"
+    BUFFER="git clone \"$url\""
     zle accept-line
 }
 
